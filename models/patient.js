@@ -26,11 +26,15 @@
         type:mongoose.Types.ObjectId,
         ref:"service",
         required:true
-    }]
+    }],
+    referredFrom: {
+        type:mongoose.Types.ObjectId,
+        
+    }
 //referred from would be added 
 //patient test would also be added
 
 
-    })
+    },{timestamps:true})
 
     module.exports = mongoose.model("patient",patientSchema)
