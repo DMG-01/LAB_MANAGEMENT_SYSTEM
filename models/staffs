@@ -1,0 +1,22 @@
+const mongoose = require("mongoose")
+const staffsSchema = new mongoose.Schema({
+
+    name:{
+        type:String,
+        required:true,
+        minlength:3
+    },
+    phoneNumber: {
+        type:Number,
+        required:true,
+        unique:true
+    },
+    role: {
+        type:String,
+        required:true,
+        enum:["front_desk","scientist","xonographer","Director"]
+    }
+},{timestamp:true})
+
+
+module.exports = mongoose.model("staff",staffsSchema)
