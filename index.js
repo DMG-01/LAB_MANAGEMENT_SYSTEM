@@ -3,8 +3,11 @@ const app = express()
 const connectDb = require("./db/connect")
 require("dotenv").config()
 
+const staffRouter = require("./Routes/staffRoute")
 
 app.use(express.json())
+
+app.use("/patientSignUp",staffRouter)
 
 const port = 5500
 
