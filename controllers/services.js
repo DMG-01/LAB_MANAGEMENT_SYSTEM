@@ -46,6 +46,17 @@ const getAllServices = async (req,res)=> {
     }
 }
 
-// delete service function
+const deleteAService = async (req,res)=> {
+    try {
+     const serviceToDelete = await service.findOneAndDelete({_id:req.params.id})
+     if(!serviceToDelete) {
+         return res.status(statusCodes.NOT_FOUND).json({msg:`the service with id ${req.params.id} was not found`})
+     }
+     return res.status(statusCodes.OK).json({msg:`the service with id ${serviceToDelete} has been deleted`})
+    }catch(error){
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
+}
 
-module.exports = {createService,getOneService,changeServicePrice,getAllServices}
+
+module.exports = {createService,getOneService,changeServicePrice,getAllServices,deleteAService}

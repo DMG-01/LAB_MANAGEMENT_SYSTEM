@@ -34,7 +34,7 @@
         }
     }],
     referredFrom: {
-        type:mongoose.Types.ObjectId,
+        type:String,
         ref:"referral",
         default:"private"       
     },
