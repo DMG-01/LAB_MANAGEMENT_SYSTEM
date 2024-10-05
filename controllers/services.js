@@ -37,6 +37,15 @@ const changeServicePrice = async(req,res)=> {
     }
 }
 
+const getAllServices = async (req,res)=> {
+    try {
+        const allServices = await service.find()
+        return res.status(statusCodes.OK).json({allServices})
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error})
+    }
+}
+
 // delete service function
 
-module.exports = {createService,getOneService,changeServicePrice}
+module.exports = {createService,getOneService,changeServicePrice,getAllServices}
