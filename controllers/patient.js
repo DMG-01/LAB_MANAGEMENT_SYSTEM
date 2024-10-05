@@ -5,7 +5,7 @@ const registerPatient = async (req, res) => {
     const { firstName, lastName, phoneNumber, email, service, referredFrom } = req.body;
     
     try {
-        let patientDetails = await patient.findOne({ phoneNumber }).populate("service");
+        let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
 
         if (!patientDetails) {
 
