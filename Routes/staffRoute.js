@@ -3,6 +3,8 @@ const staffRouter = express.Router()
 
 const {registerPatient,} = require("../controllers/patient")
 
-staffRouter.route("/").post(registerPatient)
+
+staffRouter.route("/patientSignUp").post(registerPatient)
+
 
 module.exports = staffRouter

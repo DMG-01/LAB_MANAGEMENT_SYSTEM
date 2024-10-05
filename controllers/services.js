@@ -36,4 +36,6 @@ const changeServicePrice = async(req,res)=> {
     }
 }
 
-//change price
+// delete service function
+
+module.exports = {createService,getOneService,changeServicePrice}
