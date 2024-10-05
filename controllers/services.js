@@ -24,6 +24,16 @@ const getOneService = async (req,res)=> {
     
 }
 
-//return service
+const changeServicePrice = async(req,res)=> {
+    try{
+        const _service = await service.findOneAndUpdate({_id:req.params.id},req.body,{new:true,runValidators:true}) 
+        if(!_service) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`no service with id ${req.params.id} found`})
+        }
+        return res.status(statusCodes.OK).json({_service})
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
+}
 
 //change price
