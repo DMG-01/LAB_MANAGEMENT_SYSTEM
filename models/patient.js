@@ -20,20 +20,26 @@
     email: {
         type:String,
         match:[/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "please enter a valid email"],
-        unique:true
+        unique:true,
+        default:null
     },
     service: [{
+        serviceId:{
         type:mongoose.Types.ObjectId,
         ref:"service",
         required:true
+        },
+        serviceTime: {
+            type:Date,
+            default:Date.now
+        }
     }],
     referredFrom: {
         type:mongoose.Types.ObjectId,
-        
-    }
-//referred from would be added 
-//patient test would also be added
-
+        ref:"referral",
+        default:"private"       
+    },
+    
 
     },{timestamps:true})
 
