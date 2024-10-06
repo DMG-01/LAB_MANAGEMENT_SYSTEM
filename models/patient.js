@@ -31,6 +31,10 @@
         serviceTime: {
             type:Date,
             default:Date.now
+        },
+        amountPaid: {
+            type:Number,
+            required:true
         }
     }],
     referredFrom: {

@@ -1,9 +1,9 @@
-const { number } = require("joi");
+
 const patient = require("../models/patient")
 const  statusCodes = require("http-status-codes")
 
 const registerPatient = async (req, res) => {
-    const { firstName, lastName, phoneNumber, email, service, referredFrom } = req.body;
+    const { firstName, lastName, phoneNumber, email, service, referredFrom,amountPaid} = req.body;
     
     try {
         let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
@@ -16,7 +16,8 @@ const registerPatient = async (req, res) => {
                 phoneNumber,
                 email,
                 service,  // Ensure service is an array with valid serviceId
-                referredFrom
+                referredFrom,
+                amountPaid
             });
             return res.status(statusCodes.CREATED).json({ newPatient });
         } else {
