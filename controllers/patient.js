@@ -30,9 +30,24 @@ const registerPatient = async (req, res) => {
 };
 
 
-const returnPatient = async (req,res)=> {
-    res.send("patient")
+const getOnePatient = async (req,res)=> {
+    try {
+        const _patient = await patient.find({_id:req.params.id})
+        if(!_patient) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`no patient with id ${req.params.id} found`})
+        }
+        return res.status(statusCodes.OK).json({_patient})
+
+    }catch(error){
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR)
+    }
+}
+
+const getAllPatient = async (req,res) => {
+    try {
+
+    }catch(error)
 }
 
 
-module.exports = {registerPatient,returnPatient}
+module.exports = {registerPatient,getOnePatient}
