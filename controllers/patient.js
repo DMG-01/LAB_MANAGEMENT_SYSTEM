@@ -31,6 +31,37 @@ const registerPatient = async (req, res) => {
     }
 };
 
+const getTotalAmount = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        // Convert startDate and endDate to valid date objects
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Fetch all patients with populated serviceId
+        const patients = await patient.find({
+            "service.serviceTime": { $gte: start, $lte: end } // Filter services within the time range
+        }).populate("service.serviceId");
+
+        // Initialize totalAmount to sum the prices
+        let totalAmount = 0;
+
+        patients.forEach(p => {
+            p.service.forEach(s => {
+                // Only sum up services within the given time frame
+                if (s.serviceTime >= start && s.serviceTime <= end && s.serviceId && s.serviceId.price) {
+                    totalAmount += s.serviceId.price;
+                }
+            });
+        });
+
+        res.status(200).json({ totalAmount });
+    } catch (error) {
+        return res.status(500).json({ msg: error.message });
+    }
+};
+
 
 const getOnePatient = async (req,res)=> {
     try {
@@ -59,4 +90,6 @@ const getAllPatient = async (req,res) => {
 }
 
 
-module.exports = {registerPatient,getOnePatient,getAllPatient}
+
+
+module.exports = {registerPatient,getOnePatient,getAllPatient,getTotalAmount}
