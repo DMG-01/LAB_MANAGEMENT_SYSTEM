@@ -45,9 +45,15 @@ const getOnePatient = async (req,res)=> {
 
 const getAllPatient = async (req,res) => {
     try {
-
-    }catch(error)
+        const _patients = await patient.find()
+        if(!_patients) {
+            res.status(statusCodes.NOT_FOUND).json({msg:`No patient Data found`})
+        }
+        res.status(statusCodes.OK).json({_patients})
+    }catch(error) {
+        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
 }
 
 
-module.exports = {registerPatient,getOnePatient}
+module.exports = {registerPatient,getOnePatient,getAllPatient}
