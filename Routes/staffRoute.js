@@ -5,8 +5,8 @@ const {registerPatient,getOnePatient,getAllPatient} = require("../controllers/pa
 
 
 patientRouter.route("/patientSignUp").post(registerPatient)
-patientRouter.route("/Patient/:id").get(getOnePatient)
-patientRouter.route("/patients/:id").get(getAllPatient)
+patientRouter.route("/patient/:id").get(getOnePatient)
+patientRouter.route("/patients").get(getAllPatient)
 
 
 

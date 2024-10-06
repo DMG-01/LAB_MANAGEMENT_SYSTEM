@@ -1,3 +1,4 @@
+const { number } = require("joi");
 const patient = require("../models/patient")
 const  statusCodes = require("http-status-codes")
 
@@ -32,7 +33,7 @@ const registerPatient = async (req, res) => {
 
 const getOnePatient = async (req,res)=> {
     try {
-        const _patient = await patient.find({_id:req.params.id})
+        const _patient = await patient.find({_id:req.params.id}).populate("service.serviceId")
         if(!_patient) {
             return res.status(statusCodes.NOT_FOUND).json({msg:`no patient with id ${req.params.id} found`})
         }
@@ -45,11 +46,12 @@ const getOnePatient = async (req,res)=> {
 
 const getAllPatient = async (req,res) => {
     try {
-        const _patients = await patient.find()
+        const _patients = await patient.find().populate("service.serviceId")
         if(!_patients) {
             res.status(statusCodes.NOT_FOUND).json({msg:`No patient Data found`})
         }
-        res.status(statusCodes.OK).json({_patients})
+        const numberOfPatient = await _patients.length
+        res.status(statusCodes.OK).json({_patients,numberOfPatient:numberOfPatient})
     }catch(error) {
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
     }
