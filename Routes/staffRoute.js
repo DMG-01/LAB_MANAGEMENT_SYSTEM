@@ -1,10 +1,13 @@
 const express = require("express")
-const staffRouter = express.Router()
+const patientRouter = express.Router()
 
-const {registerPatient,} = require("../controllers/patient")
-
-
-staffRouter.route("/patientSignUp").post(registerPatient)
+const {registerPatient,getOnePatient,getAllPatient} = require("../controllers/patient")
 
 
-module.exports = staffRouter
+patientRouter.route("/patientSignUp").post(registerPatient)
+patientRouter.route("/Patient/:id").get(getOnePatient)
+patientRouter.route("/patients/:id").get(getAllPatient)
+
+
+
+module.exports = patientRouter
