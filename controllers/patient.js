@@ -76,19 +76,38 @@ const getOnePatient = async (req,res)=> {
     }
 }
 
-const getAllPatient = async (req,res) => {
+const getAllPatient = async (req, res) => {
     try {
-        const _patients = await patient.find().populate("service.serviceId")
-        if(!_patients) {
-            res.status(statusCodes.NOT_FOUND).json({msg:`No patient Data found`})
-        }
-        const numberOfPatient = await _patients.length
-        res.status(statusCodes.OK).json({_patients,numberOfPatient:numberOfPatient})
-    }catch(error) {
-        res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
-    }
-}
+      const { timestamp, serviceId } = req.query;
+      
+      
+      let query = patient.find().populate("service.serviceId");
+  
+     
+      if (serviceId) {
+        query = query.sort("service.serviceId");
+      } else if (timestamp) {
+        query = query.sort("timestamp");
+      }
+  
+      
+      const _patients = await query;
+  
 
+      if (!_patients || _patients.length === 0) {
+        return res.status(statusCodes.NOT_FOUND).json({ msg: "No patient data found" });
+      }
+  
+      
+      const numberOfPatient = _patients.length;
+      res.status(statusCodes.OK).json({ _patients, numberOfPatient });
+  
+    } catch (error) {
+    
+      res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+    }
+  };
+  
 
 
 

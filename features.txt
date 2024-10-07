@@ -1,3 +1,5 @@
 1. calculate commision of hospitals
 2. account for moeny
 3. check if user still owes 
+4.  track if its cash transfer
+track the type of test
