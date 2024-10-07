@@ -78,35 +78,35 @@ const getOnePatient = async (req,res)=> {
 
 const getAllPatient = async (req, res) => {
     try {
-      const { timestamp, serviceId } = req.query;
+      const { timestamp, serviceId, methodOfPayment } = req.query;
       
-      
-      let query = patient.find().populate("service.serviceId");
+      // Initialize the query with a possible filter for methodOfPayment
+      let query = patient.find(methodOfPayment ? { "service.methodOfPayment": methodOfPayment } : {}).populate("service.serviceId");
   
-     
+      // Apply sorting based on serviceId or timestamp if specified
       if (serviceId) {
         query = query.sort("service.serviceId");
       } else if (timestamp) {
-        query = query.sort("timestamp");
+        query = query.sort("timestamps");
       }
   
-      
       const _patients = await query;
   
-
+      // Handle case where no patient data is found
       if (!_patients || _patients.length === 0) {
         return res.status(statusCodes.NOT_FOUND).json({ msg: "No patient data found" });
       }
   
-      
+      // Return the patient data along with the count
       const numberOfPatient = _patients.length;
       res.status(statusCodes.OK).json({ _patients, numberOfPatient });
-  
-    } catch (error) {
     
+    } catch (error) {
+      // Handle internal server errors
       res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
   };
+  
   
 
 
