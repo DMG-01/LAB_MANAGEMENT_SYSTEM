@@ -7,7 +7,7 @@ const registerPatient = async (req, res) => {
     
     try {
         let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
-
+        
         if (!patientDetails) {
             // Create a new patient if they don't already exist
             const newPatient = await patient.create({
