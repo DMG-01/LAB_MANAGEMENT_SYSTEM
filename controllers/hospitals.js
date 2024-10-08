@@ -10,8 +10,14 @@ const calculateDiscount = async (req,res)=> {
 
     let totalAmount = 0
 
-    for(let index = 0;index <= patientsRefferedFrom.length;index++) {
-        totalAmount = patientsRefferedFrom[index].service.amountPaid
+    for(let index = 0;index < patientsRefferedFrom.length;index++) {
+        const patients = patientsRefferedFrom[index]
+
+        for(let j = 0; j < patients.service.length; j++) {
+            let service = patients.service[j]
+            totalAmount += service.amountPaid
+        }
+        // totalAmount += patientsRefferedFrom[index].service.amountPaid
     }
     const discount = ((10/100)*totalAmount)
     res.status(statusCodes.OK).json({msg:`the total discount of ${referredFrom} is ${discount}`})
