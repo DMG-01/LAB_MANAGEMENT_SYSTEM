@@ -5,11 +5,13 @@ require("dotenv").config()
 
 const patientRouter = require("./Routes/staffRoute")
 const adminRouter = require("./Routes/adminRoute")
+const hospitalRouter = require("./Routes/hospitalRoutes")
 
 app.use(express.json())
 
 app.use("/staff",patientRouter)// change this url
 app.use("/admin",adminRouter)
+app.use("/hospital",hospitalRouter)
 
 const port = 5500
 

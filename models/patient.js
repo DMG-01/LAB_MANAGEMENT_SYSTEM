@@ -38,12 +38,12 @@
             methodOfPayment: {
                 type: String,
                 required: true
+            },
+            referredFrom: {
+                type: String,
+                default: "private" // "private" is the default value
             }
-        }],
-        referredFrom: {
-            type: String,
-            default: "private" // "private" is the default value
-        }
+        }]
     }, { timestamps: true });
 
     

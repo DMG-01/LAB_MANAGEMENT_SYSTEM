@@ -50,8 +50,8 @@ const getTotalAmount = async (req, res) => {
         patients.forEach(p => {
             p.service.forEach(s => {
                 // Only sum up services within the given time frame
-                if (s.serviceTime >= start && s.serviceTime <= end && s.serviceId && s.serviceId.price) {
-                    totalAmount += s.serviceId.price;
+                if (s.serviceTime >= start && s.serviceTime <= end && s.serviceId && s.amount) {
+                    totalAmount += s.amountPaid;
                 }
             });
         });
