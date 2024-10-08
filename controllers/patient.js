@@ -31,36 +31,50 @@ const registerPatient = async (req, res) => {
     }
 };
 
-const getTotalAmount = async (req, res) => {
+const getTotalAmount = async (req, res) => { 
     try {
         const { startDate, endDate } = req.query;
 
-        // Convert startDate and endDate to valid date objects
+        // Check if dates are provided
+        if (!startDate || !endDate) {
+            return res.status(400).json({ msg: "Please provide both startDate and endDate" });
+        }
+
+        // Convert startDate and endDate to valid Date objects
         const start = new Date(startDate);
         const end = new Date(endDate);
 
-        // Fetch all patients with populated serviceId
+        // Ensure valid date conversion
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ msg: "Invalid date format" });
+        }
+
+        // Fetch all patients with services in the time range and populated serviceId
         const patients = await patient.find({
-            "service.serviceTime": { $gte: start, $lte: end } // Filter services within the time range
+            "service.serviceTime": { $gte: start, $lte: end }
         }).populate("service.serviceId");
 
         // Initialize totalAmount to sum the prices
         let totalAmount = 0;
 
+        // Sum up the amountPaid for services within the specified date range
         patients.forEach(p => {
-            p.service.forEach(s => {
-                // Only sum up services within the given time frame
-                if (s.serviceTime >= start && s.serviceTime <= end && s.serviceId && s.amount) {
-                    totalAmount += s.amountPaid;
-                }
-            });
+            if (Array.isArray(p.service)) {
+                p.service.forEach(s => {
+                    if (s.serviceTime >= start && s.serviceTime <= end && s.serviceId && typeof s.amountPaid === "number") {
+                        totalAmount += s.amountPaid;
+                    }
+                });
+            }
         });
 
+        // Send the response with the total amount
         res.status(200).json({ totalAmount });
     } catch (error) {
         return res.status(500).json({ msg: error.message });
     }
 };
+
 
 
 const getOnePatient = async (req,res)=> {
