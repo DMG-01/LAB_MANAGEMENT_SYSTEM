@@ -6,6 +6,26 @@ const  statusCodes = require("http-status-codes")
 const registerPatient = async (req, res) => {
     const { firstName, lastName, phoneNumber, email, service, referredFrom,methodOfPayment,amountPaid } = req.body;
     
+    if(referredFrom !== "private" && referredFrom) {
+        const referral = await hospitalDiscount.findOne({Name:referredFrom})
+
+        if(!referral) {
+            try{
+            const newReferral = await hospitalDiscount.create({Name:referredFrom,totalAmount:amountPaid})
+            
+            await newReferral.save()
+         //revisit
+         return res.status(statusCodes.OK).json({msg:`new referral; created ${newReferral}`})
+            }catch(error){
+                return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+            }
+         
+        }else {
+            referral.totalAmount += amountPaid
+            await referral.save()
+        }
+    }
+
     try {
         let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
         
@@ -21,19 +41,7 @@ const registerPatient = async (req, res) => {
                 methodOfPayment
             });
 
-            if(referredFrom !== "private") {
-                const referral = await hospitalDiscount.findOne({referredFrom})
 
-                if(!referral) {
-                    try{
-                 const newReferral = await hospitalDiscount.create({referredFrom,"totalAmount":amountPaid + amountPaid})//revisit
-                 return res.status(statusCodes.OK).json({msg:`new referra; created ${newReferral}`})
-                    }catch(error){
-                        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
-                    }
-                 
-                }
-            }
             return res.status(statusCodes.CREATED).json({ newPatient });
         } else {
             // If patient exists, add the new service to the array
