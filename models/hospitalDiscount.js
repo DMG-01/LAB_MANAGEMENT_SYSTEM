@@ -25,4 +25,4 @@ const hospitalDiscount = mongoose.Schema({
     }
 },{timestamp:true})
 
-module.exports = mongoose.model("hospitalDiscountSchema", hospitalDiscount)
+module.exports = mongoose.model("hospitalDiscount", hospitalDiscount)

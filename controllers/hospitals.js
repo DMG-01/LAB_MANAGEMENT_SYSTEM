@@ -1,4 +1,5 @@
 const patient = require("../models/patient");
+const hospitalDiscount = require("../models/hospitalDiscount")
 const statusCodes = require("http-status-codes");
 
 const calculateDiscount = async (req, res) => {
@@ -42,4 +43,17 @@ const calculateDiscount = async (req, res) => {
     }
 };
 
-module.exports = { calculateDiscount };
+const returnAllHospitalAndDiscount = async (req,res)=> {
+    try{
+    const hospitalsAndDiscount = await hospitalDiscount.find()
+    if(!hospitalsAndDiscount) {
+        return res.status(statusCodes.NOT_FOUND).json({msg:`no hospital and discount found`})
+    }
+
+    return res.status(statusCodes.OK).json({hospitalsAndDiscount})
+}catch(error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+}
+}
+
+module.exports = { calculateDiscount, returnAllHospitalAndDiscount };

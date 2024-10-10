@@ -3,3 +3,4 @@
 3. check if user still owes 
 4.  track if its cash transfer --- done
 track the type of test 
+get all hospitalDiscount
