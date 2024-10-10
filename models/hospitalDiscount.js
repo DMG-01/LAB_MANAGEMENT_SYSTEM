@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const hospitalDiscountSchema = new mongoose.Schema({
     Name: {
         type: String,
-        required: true,
+        required: [true,"enter nname"],
         unique: true
     },
     totalAmount: {
