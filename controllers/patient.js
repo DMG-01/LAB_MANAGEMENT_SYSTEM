@@ -4,48 +4,61 @@ const hospitalDiscount = require("../models/hospitalDiscount")
 const  statusCodes = require("http-status-codes")
 
 const registerPatient = async (req, res) => {
-    const { firstName, lastName, phoneNumber, email, service, referredFrom,methodOfPayment,amountPaid } = req.body;
-    
-    if(referredFrom !== "private" && referredFrom) {
-        const referral = await hospitalDiscount.findOne({Name:referredFrom})
+    const { firstName, lastName, phoneNumber, email, service, referredFrom, methodOfPayment, amountPaid } = req.body;
 
-        if(!referral) {
-            try{
-            const newReferral = await hospitalDiscount.create({Name:referredFrom,totalAmount:amountPaid})
-            
-            await newReferral.save()
-         //revisit
-         return res.status(statusCodes.OK).json({msg:`new referral; created ${newReferral}`})
-            }catch(error){
-                return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    // Parse amountPaid to ensure it's treated as a number
+    const parsedAmountPaid = parseFloat(amountPaid);
+
+    if (referredFrom && referredFrom !== "private") {
+        try {
+            let referral = await hospitalDiscount.findOne({ Name: referredFrom });
+
+            if (!referral) {
+                // Create a new referral if not found
+                referral = await hospitalDiscount.create({
+                    Name: referredFrom,
+                    totalAmount: parsedAmountPaid,
+                    totalDiscount: (10 / 100) * parsedAmountPaid, // Assuming 10% discount logic here
+                    totalDiscountPayed: 0
+                });
+
+                await referral.save(); // Save the new referral
+                console.log(`New referral created: ${referredFrom}`);
+            } else {
+                // Update existing referral
+                referral.totalAmount += parsedAmountPaid;
+                referral.totalDiscount += (10 / 100) * parsedAmountPaid;
+                await referral.save(); // Save the updated referral
+                console.log(`Updated referral: ${referredFrom}`);
             }
-         
-        }else {
-            referral.totalAmount += amountPaid
-            await referral.save()
+        } catch (error) {
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
         }
     }
 
     try {
         let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
-        
+
         if (!patientDetails) {
-            // Create a new patient if they don't already exist
+            // Create new patient
             const newPatient = await patient.create({
                 firstName,
                 lastName,
                 phoneNumber,
                 email,
-                service,  // Ensure service is an array with valid serviceId
+                service, // Ensure service is an array with valid serviceId
                 referredFrom,
                 methodOfPayment
             });
 
-
             return res.status(statusCodes.CREATED).json({ newPatient });
         } else {
-            // If patient exists, add the new service to the array
-            patientDetails.service.push(...service);  // Spread operator to add new services
+            // Add new services to existing patient
+            service.forEach(s => {
+                if (s.serviceId && s.amountPaid) {
+                    patientDetails.service.push(s); // Add validated service to array
+                }
+            });
             await patientDetails.save();
             return res.status(statusCodes.OK).json({ patientDetails });
         }

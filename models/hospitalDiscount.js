@@ -1,28 +1,29 @@
-const mongoose =  require("mongoose")
-const hospitalDiscount = mongoose.Schema({
+const mongoose = require("mongoose");
+
+const hospitalDiscountSchema = new mongoose.Schema({
     Name: {
-        type:String,
-        required:true,
-        unique:true
+        type: String,
+        required: true,
+        unique: true
     },
     totalAmount: {
-        type:Number,
-        required:true,
-        default:0
+        type: Number,
+        required: true,
+        default: 0
     },
     accountNumber: {
-        type:String
+        type: String
     },
     totalDiscount: {
-        type:Number,
-        required:true,
-        default:0
+        type: Number,
+        required: true,
+        default: 0
     },
     totalDiscountPayed: {
-        type:Number,
-        required:true,
-        default:0
+        type: Number,
+        required: true,
+        default: 0
     }
-},{timestamp:true})
+}, { timestamps: true }); // Corrected timestamp field
 
-module.exports = mongoose.model("hospitalDiscount", hospitalDiscount)
+module.exports = mongoose.model("HospitalDiscount", hospitalDiscountSchema);

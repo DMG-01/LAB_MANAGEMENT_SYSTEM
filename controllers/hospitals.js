@@ -43,17 +43,16 @@ const calculateDiscount = async (req, res) => {
     }
 };
 
-const returnAllHospitalAndDiscount = async (req,res)=> {
-    try{
-    const hospitalsAndDiscount = await hospitalDiscount.find()
-    if(!hospitalsAndDiscount) {
-        return res.status(statusCodes.NOT_FOUND).json({msg:`no hospital and discount found`})
+const returnAllHospitalAndDiscount = async (req, res) => {
+    try {
+        const hospitalsAndDiscount = await hospitalDiscount.find();
+        if (!hospitalsAndDiscount || hospitalsAndDiscount.length === 0) {
+            return res.status(statusCodes.NOT_FOUND).json({ msg: `No hospital and discount found` });
+        }
+        return res.status(statusCodes.OK).json({ hospitalsAndDiscount });
+    } catch (error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
     }
-
-    return res.status(statusCodes.OK).json({hospitalsAndDiscount})
-}catch(error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
-}
-}
+};
 
 module.exports = { calculateDiscount, returnAllHospitalAndDiscount };
