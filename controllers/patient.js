@@ -38,14 +38,14 @@ const registerPatient = async (req, res) => {
   
           await referral.save(); // Save the new referral
           console.log(`New referral created: ${referredFrom}`);
-          res.status(statusCodes.CREATED).json({ msg: referral });
+          return res.status(statusCodes.CREATED).json({ msg: referral });
         } else {
           // Update existing referral
           referral.totalAmount += Number(service[0].amountPaid);
           referral.totalDiscount += Number((10 / 100) * service[0].amountPaid);
           await referral.save(); // Save the updated referral
           console.log(`Updated referral: ${referredFrom}`);
-          res.status(statusCodes.OK).json({ referral });
+          return res.status(statusCodes.OK).json({ referral });
         }
       } catch (error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
