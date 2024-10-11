@@ -42,7 +42,7 @@ const registerPatient = async (req, res) => {
         } else {
           // Update existing referral
           referral.totalAmount += Number(service[0].amountPaid);
-          referral.totalDiscountPayed += Number((10 / 100) * service[0].amountPaid);
+          referral.totalDiscount += Number((10 / 100) * service[0].amountPaid);
           await referral.save(); // Save the updated referral
           console.log(`Updated referral: ${referredFrom}`);
           res.status(statusCodes.OK).json({ referral });
