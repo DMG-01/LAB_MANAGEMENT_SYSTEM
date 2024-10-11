@@ -33,4 +33,33 @@ const returnAllHospitalAndDiscount = async (req, res) => {
     }
 };
 
-module.exports = { calculateDiscount, returnAllHospitalAndDiscount };
+const payADiscount = async (req,res)=> {
+
+    try {
+          const {hospitalDiscountToPay} = req.query
+          const {discountToPay} = req.body
+
+          const hospital = await hospitalDiscount.findOne({ Name: hospitalDiscountToPay})
+          if(!hospital) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`no hospital with name ${req.query} found`})
+          }
+          //const hospitalDiscount = await hospital.totalDiscount
+          //const hospitalAccountNumber = await hospital.hospitalAccountNumber
+
+
+          hospital.totalDiscountPayed += discountToPay
+          await hospital.save()
+
+          const remainingDiscountToPay = hospital.totalDiscount - hospital.totalDiscountPayed
+
+          return res.status(statusCodes.OK).json({msg:`${discountToPay} has been paid, remaining discount to pay is ${remainingDiscountToPay}`, hospital})
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
+}
+
+const changeAccountNumber = async (req,res)=> {
+
+}
+
+module.exports = { calculateDiscount, returnAllHospitalAndDiscount, payADiscount };
