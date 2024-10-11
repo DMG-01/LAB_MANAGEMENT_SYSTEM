@@ -33,7 +33,7 @@ const registerPatient = async (req, res) => {
           referral = new hospitalDiscount({
             Name: referredFrom,
             totalAmount: Number(service[0].amountPaid), // Take from first service for simplicity
-            totalDiscountPayed: Number((10 / 100) * service[0].amountPaid), // Assuming 10% discount logic
+            totalDiscount: Number((10 / 100) * service[0].amountPaid), // Assuming 10% discount logic
           });
   
           await referral.save(); // Save the new referral
