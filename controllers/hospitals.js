@@ -59,7 +59,22 @@ const payADiscount = async (req,res)=> {
 }
 
 const changeAccountNumber = async (req,res)=> {
+ try {
+    const {referralAccountNumberToChange} = req.query
+    const {newAccountNumber} = req.body
 
+    const referral = await hospitalDiscount.findOne({Name:referralAccountNumberToChange})
+    if(!referral) {
+        return res.status(statusCodes.NOT_FOUND).json({msg:`no referral with name ${referralAccountNumberToChange}`})
+    }
+    referral.accountNumber = newAccountNumber
+    await referral.save()
+    console.log(`${referralAccountNumberToChange} account number has been changed to ${newAccountNumber}`)
+    return res.status(statusCodes.OK).json({msg:`${referralAccountNumberToChange} account number has been changed to ${newAccountNumber}`})
+
+ }catch(error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+ }
 }
 
-module.exports = { calculateDiscount, returnAllHospitalAndDiscount, payADiscount };
+module.exports = { calculateDiscount, returnAllHospitalAndDiscount, payADiscount, changeAccountNumber };
