@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+require("dotenv").config()
 const staffsSchema = new mongoose.Schema({
 
     name:{
@@ -9,7 +10,7 @@ const staffsSchema = new mongoose.Schema({
         minlength:3
     },
     phoneNumber: {
-        type:Number,
+        type:String,
         required:true,
         unique:true
     },
@@ -30,7 +31,7 @@ const staffsSchema = new mongoose.Schema({
 },{timestamp:true})
 
 staffsSchema.pre("save", async function(next) {
-const salt = bcrypt.genSalt(10)
+const salt = await bcrypt.genSalt(10)
 this.password = await bcrypt.hash(this.password,salt)
 next()
 })
