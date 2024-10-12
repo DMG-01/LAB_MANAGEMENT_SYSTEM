@@ -74,7 +74,7 @@ const staffLogin = async (req,res)=> {
     try {
        const { phoneNumber, password} = req.body 
 
-       const _staff = await staff.find({phoneNumber})
+       const _staff = await staff.findOne({phoneNumber})
        if(!_staff) {
         return res.status(statusCodes.NOT_FOUND).json({msg:`no staff with phone number ${phoneNumber} found`})
        }
@@ -84,8 +84,8 @@ const staffLogin = async (req,res)=> {
         return res.status(statusCodes.UNAUTHORIZED).json({msg:`please enter correct login details`})
        }
 
-       _staff.createJWT()
-
+       const jwtToken = _staff.createJWT()
+       console.log(jwtToken)
        return res.status(statusCodes.OK).json({_staff})
 
     }catch(error) {
@@ -101,4 +101,4 @@ const changeStaffLevel = ()=> {
 
 }
 
-module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff}
+module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin}
