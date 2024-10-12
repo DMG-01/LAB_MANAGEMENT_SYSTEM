@@ -69,8 +69,28 @@ const returnAllStaff = async (req,res)=> {
     }
 }
 
-const staffLogin = ()=> {
+const staffLogin = async (req,res)=> {
 
+    try {
+       const { phoneNumber, password} = req.body 
+
+       const _staff = await staff.find({phoneNumber})
+       if(!_staff) {
+        return res.status(statusCodes.NOT_FOUND).json({msg:`no staff with phone number ${phoneNumber} found`})
+       }
+
+       const isPassword =  _staff.comparePassword(password)
+       if(!isPassword) {
+        return res.status(statusCodes.UNAUTHORIZED).json({msg:`please enter correct login details`})
+       }
+
+       _staff.createJWT()
+
+       return res.status(statusCodes.OK).json({_staff})
+
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
 }
 
 const removeAStaff = ()=> {
