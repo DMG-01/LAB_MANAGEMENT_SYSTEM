@@ -93,12 +93,21 @@ const staffLogin = async (req,res)=> {
     }
 }
 
-const removeAStaff = ()=> {
-
+const removeAStaff = async (req,res)=> {
+    try{
+    const {phoneNumber} = req.body
+    if(!phoneNumber) {
+        return res.status(statusCodes.BAD_REQUEST).json({msg:`phone number is required`})
+    }
+    await staff.findOneAndDelete({phoneNumber:phoneNumber})
+    return res.status(statusCodes.OK).json({msg:`staff with phone number ${phoneNumber} has been removed`})
+    }catch(error) {
+      return res.status(statusCodes.OK).json({msg:error})
+    }
 }
 
 const changeStaffLevel = ()=> {
 
 }
 
-module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin}
+module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin,removeAStaff}
