@@ -55,6 +55,20 @@ const registerAStaff = async (req,res)=> {
     }
 }
 
+const returnAllStaff = async (req,res)=> {
+    try {
+        const allStaffs = await staff.find()
+        if(!allStaffs) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`no staff found`})
+        }
+        const totalNumberOfStaff = allStaffs.length 
+        return res.status(statusCodes.OK).json({allStaffs, totalNumberOfStaff:totalNumberOfStaff})
+
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
+}
+
 const staffLogin = ()=> {
 
 }
