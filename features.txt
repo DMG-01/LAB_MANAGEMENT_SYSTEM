@@ -6,3 +6,4 @@ track the type of test
 get all hospitalDiscount -- done
 scan can only get scan data 
 lab can only get lab data
+sending patient result to them softcopy

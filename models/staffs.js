@@ -22,10 +22,6 @@ const staffsSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    totalStaff: {
-        type:Number,
-        required:true
-    },
     level: {
         type:Number,
         required:true,
