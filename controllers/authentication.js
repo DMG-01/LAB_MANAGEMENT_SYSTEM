@@ -106,8 +106,20 @@ const removeAStaff = async (req,res)=> {
     }
 }
 
-const changeStaffLevel = ()=> {
+const changeStaffLevel = async(req,res)=> {
 
+    try {
+      const  {phoneNumber, newLevel} = req.body 
+      const staffLevelToChange = await staff.findOne({phoneNumber})
+      if(!staffLevelToChange) {
+        return res.status(statusCodes.NOT_FOUND).json({msg:`no staff with phone number ${phoneNumber} found`})
+      }
+      staffLevelToChange.level = newLevel
+      await staffLevelToChange.save()
+      return res.status(statusCodes.OK).json({staffLevelToChange})
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
 }
 
 module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin,removeAStaff}
