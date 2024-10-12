@@ -37,8 +37,22 @@ if(!password) {
 }
 }
 
-const registerAStaff = ()=> {
+const registerAStaff = async (req,res)=> {
+    try{
+    const {name, phoneNumber,role,password,level} = req.body 
 
+    let staffPresent = await staff.findOne({phoneNumber})
+    if(staffPresent) {
+        return res.status(statusCodes.BAD_REQUEST).json({msg:`${staffPresent.name} already exist with phone number ${phoneNumber}`})
+    }
+
+    const _staff = await staff.create({name:name, phoneNumber:phoneNumber, role:role, password:password, level:level})
+    return res.status(statusCodes.CREATED).json({msg:`new staff has been created`, _staff})
+
+
+    }catch(error) {
+       return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+    }
 }
 
 const staffLogin = ()=> {
