@@ -67,4 +67,4 @@ const changeStaffLevel = ()=> {
 
 }
 
-module.exports = {adminFirstSignUp}
+module.exports = {adminFirstSignUp, registerAStaff}
