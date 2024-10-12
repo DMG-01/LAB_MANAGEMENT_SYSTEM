@@ -21,6 +21,15 @@ const staffsSchema = new mongoose.Schema({
     password: {
         type:String,
         required:true,
+    },
+    totalStaff: {
+        type:Number,
+        required:true
+    },
+    level: {
+        type:Number,
+        required:true,
+        default:1
     }
 },{timestamp:true})
 

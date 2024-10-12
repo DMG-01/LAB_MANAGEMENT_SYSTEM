@@ -4,3 +4,5 @@
 4.  track if its cash transfer --- done
 track the type of test 
 get all hospitalDiscount -- done
+scan can only get scan data 
+lab can only get lab data
