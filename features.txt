@@ -9,3 +9,4 @@ lab can only get lab data
 sending patient result to them softcopy
 page not found router
 when a new staff is added send their login to their phone number
+limit some features depending on their levels

@@ -122,4 +122,4 @@ const changeStaffLevel = async(req,res)=> {
     }
 }
 
-module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin,removeAStaff}
+module.exports = {adminFirstSignUp, registerAStaff, returnAllStaff, staffLogin,removeAStaff,changeStaffLevel}
