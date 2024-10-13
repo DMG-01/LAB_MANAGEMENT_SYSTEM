@@ -1,9 +1,10 @@
 const express = require("express")
 const adminRouter = express.Router()
+const topLevelAuthentication = require("../middleware/topLevelAuthentication")
 
 const {createService,getOneService,changeServicePrice,getAllServices,deleteAService} = require("../controllers/services")
 
-adminRouter.route("/createService").post(createService)
+adminRouter.route("/createService/:id").post(topLevelAuthentication,createService)
 adminRouter.route("/getAService/:id").get(getOneService)
 adminRouter.route("/changePrice/:id").patch(changeServicePrice)
 adminRouter.route("/allServices").get(getAllServices)
