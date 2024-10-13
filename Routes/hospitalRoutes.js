@@ -1,4 +1,5 @@
 const {calculateDiscount, returnAllHospitalAndDiscount, payADiscount, changeAccountNumber} = require("../controllers/hospitals")
+const levelAuthentication = require("../middleware/topLevelAuthentication")
 const express = require("express")
 const hospitalRouter = express.Router()
 
