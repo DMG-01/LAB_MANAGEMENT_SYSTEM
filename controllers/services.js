@@ -33,7 +33,7 @@ const changeServicePrice = async(req,res)=> {
         }
         return res.status(statusCodes.OK).json({_service})
     }catch(error) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error.message})
     }
 }
 

@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const levelAuthentication = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.userId;
 
     // Validate if the userId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
