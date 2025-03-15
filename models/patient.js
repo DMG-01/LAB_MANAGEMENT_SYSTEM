@@ -22,8 +22,7 @@
             default: null
         },
         age : {
-            type:Number,
-            required:[true,"patient age is required"]
+            type:Number
         },
         service: [{
             serviceId: {

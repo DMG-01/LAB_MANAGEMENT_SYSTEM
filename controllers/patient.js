@@ -3,90 +3,84 @@ const hospitalDiscount = require("../models/hospitalDiscount");
 const statusCodes = require("http-status-codes");
 
 const registerPatient = async (req, res) => {
-    const {
-      firstName,
-      lastName,
-      phoneNumber,
-      age,
-      email,
-      service, // Expecting array of services
-    } = req.body;
-  
-    let totalAmount = 0
-    // Loop through service array and validate amountPaid for each service
-    for (const s of service) {
-      const parsedAmountPaid = Number(s.amountPaid);
-      // Validate amountPaid for each service
-      if (isNaN(parsedAmountPaid)) {
-        return res.status(400).json({ msg: "Invalid amountPaid, must be a valid number in each service" });
-      }
+  const { firstName, lastName, phoneNumber, email, service } = req.body;
 
-      totalAmount += parsedAmountPaid
+  let totalAmount = 0;
+
+  // Validate amountPaid for each service
+  for (const s of service) {
+    const parsedAmountPaid = Number(s.amountPaid);
+    if (isNaN(parsedAmountPaid)) {
+      return res.status(400).json({ msg: "Invalid amountPaid, must be a valid number in each service" });
     }
-  
-    // Handle referral logic only if referredFrom is not "private"
-    const referredFrom = service[0].referredFrom || "private"; // Extract referredFrom from first service
-  
-    if (referredFrom !== "private") {
-      try {
-        let referral = await hospitalDiscount.findOne({ Name: referredFrom });
-  
-        if (!referral) {
-          // Create a new referral if not found
-          referral = new hospitalDiscount({
-            Name: referredFrom,
-            totalAmount:totalAmount , // Take from first service for simplicity
-            totalDiscount: Number((10 / 100) * totalAmount), // Assuming 10% discount logic
-          });
-  
-          await referral.save(); // Save the new referral
-          console.log(`New referral created: ${referredFrom}`);
-          return res.status(statusCodes.CREATED).json({ msg: referral });
-        } else {
-          // Update existing referral
-          referral.totalAmount += totalAmount;;
-          referral.totalDiscount += Number((10 / 100) * totalAmount);
-          await referral.save(); // Save the updated referral
-          console.log(`Updated referral: ${referredFrom}`);
-          return res.status(statusCodes.OK).json({ referral });
-        }
-      } catch (error) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
-      }
-    } else {
-      console.log("Referred from private");
-    }
-  
+    totalAmount += parsedAmountPaid;
+  }
+
+  // Handle referral logic
+  const referredFrom = service[0]?.referredFrom || "private";
+
+  if (referredFrom !== "private") {
     try {
-      let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
-  
-      if (!patientDetails) {
-        // Create new patient
-        const newPatient = await patient.create({
-          firstName,
-          lastName,
-          phoneNumber,
-          email,
-          service, // Ensure service is an array with valid serviceId
+      let referral = await hospitalDiscount.findOne({ Name: referredFrom });
+
+      if (!referral) {
+        referral = new hospitalDiscount({
+          Name: referredFrom,
+          totalAmount,
+          totalDiscount: Number((10 / 100) * totalAmount),
         });
-  
-        return res.status(statusCodes.CREATED).json({ newPatient });
+        await referral.save();
+        console.log(`New referral created: ${referredFrom}`);
       } else {
-        // Add new services to existing patient
-        service.forEach((s) => {
-          if (s.serviceId && s.amountPaid) {
-            patientDetails.service.push(s); // Add validated service to array
-          }
-        });
-  
-        await patientDetails.save();
-        return res.status(statusCodes.OK).json({ patientDetails });
+        referral.totalAmount += totalAmount;
+        referral.totalDiscount += Number((10 / 100) * totalAmount);
+        await referral.save();
+        console.log(`Updated referral: ${referredFrom}`);
       }
     } catch (error) {
-      return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: error.message });
+      console.error(`Referral handling failed: ${error.message}`);
     }
-  };
-  
+  } else {
+    console.log("Referred from private");
+  }
+
+  try {
+    let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
+
+    let newServices = [];
+
+    if (!patientDetails) {
+      // Create new patient
+      const newPatient = await patient.create({
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+        service,
+      });
+      newServices = service;
+    } else {
+      // Track and add only new services
+      const existingServiceIds = patientDetails.service.map((s) => s.serviceId.toString());
+
+      service.forEach((s) => {
+        if (s.serviceId && s.amountPaid && !existingServiceIds.includes(s.serviceId.toString())) {
+          patientDetails.service.push(s);
+          newServices.push(s); // Capture new services only
+        }
+      });
+
+      await patientDetails.save();
+    }
+
+    console.log("New services added:", newServices);
+    return res.status(201).json({ newServices });
+
+  } catch (error) {
+    console.error(`Error updating patient: ${error.message}`);
+  }
+};
+
   
   
 
