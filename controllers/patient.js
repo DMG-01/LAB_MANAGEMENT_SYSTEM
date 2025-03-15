@@ -11,14 +11,16 @@ const registerPatient = async (req, res) => {
       service, // Expecting array of services
     } = req.body;
   
+    let totalAmount = 0
     // Loop through service array and validate amountPaid for each service
     for (const s of service) {
       const parsedAmountPaid = Number(s.amountPaid);
-  
       // Validate amountPaid for each service
       if (isNaN(parsedAmountPaid)) {
         return res.status(400).json({ msg: "Invalid amountPaid, must be a valid number in each service" });
       }
+
+      totalAmount += parsedAmountPaid
     }
   
     // Handle referral logic only if referredFrom is not "private"
@@ -32,8 +34,8 @@ const registerPatient = async (req, res) => {
           // Create a new referral if not found
           referral = new hospitalDiscount({
             Name: referredFrom,
-            totalAmount: Number(service[0].amountPaid), // Take from first service for simplicity
-            totalDiscount: Number((10 / 100) * service[0].amountPaid), // Assuming 10% discount logic
+            totalAmount:totalAmount , // Take from first service for simplicity
+            totalDiscount: Number((10 / 100) * totalAmount), // Assuming 10% discount logic
           });
   
           await referral.save(); // Save the new referral
@@ -41,8 +43,8 @@ const registerPatient = async (req, res) => {
           return res.status(statusCodes.CREATED).json({ msg: referral });
         } else {
           // Update existing referral
-          referral.totalAmount += Number(service[0].amountPaid);
-          referral.totalDiscount += Number((10 / 100) * service[0].amountPaid);
+          referral.totalAmount += totalAmount;;
+          referral.totalDiscount += Number((10 / 100) * totalAmount);
           await referral.save(); // Save the updated referral
           console.log(`Updated referral: ${referredFrom}`);
           return res.status(statusCodes.OK).json({ referral });
