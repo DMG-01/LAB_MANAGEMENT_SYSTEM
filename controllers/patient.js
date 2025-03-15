@@ -7,6 +7,7 @@ const registerPatient = async (req, res) => {
       firstName,
       lastName,
       phoneNumber,
+      age,
       email,
       service, // Expecting array of services
     } = req.body;

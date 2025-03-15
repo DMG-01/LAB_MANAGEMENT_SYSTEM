@@ -21,6 +21,10 @@
             match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "please enter a valid email"],
             default: null
         },
+        age : {
+            type:Number,
+            required:[true,"patient age is required"]
+        },
         service: [{
             serviceId: {
                 type: mongoose.Types.ObjectId,
