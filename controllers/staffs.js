@@ -28,7 +28,26 @@ const modifyAserviceProperties = async (req,res)=> {
 }
 
 const removeServiceProperties = async (req,res)=> {
-    
+    const propertiesToRemove = [...req.body]
+
+    try {
+        const _service = await service.findOne({_id:req.params.id})
+        if(!_service) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`service with service id ${req.params.id} not found`})
+        }
+
+        propertiesToRemove.forEach((prop)=> {
+            if(_service.properties.includes(prop)) {
+                _service.properties.pull(prop)
+            }else {
+                console.log(`${prop} does not exist`)
+            }
+        })
+        await _service.save()
+        return res.status(statusCodes.OK).json({_service})
+    }catch(error) {
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error})
+    }
 }
 
-module.exports =  {modifyAserviceProperties}
+module.exports =  {modifyAserviceProperties,removeServiceProperties}
