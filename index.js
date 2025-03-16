@@ -3,19 +3,21 @@ const app = express()
 const connectDb = require("./db/connect")
 require("dotenv").config()
 
-const patientRouter = require("./Routes/staffRoute")
+const {patientRouter, serviceRouter} = require("./Routes/staffRoute")
 const adminRouter = require("./Routes/adminRoute")
 const hospitalRouter = require("./Routes/hospitalRoutes")
 const authRouter = require("./Routes/auth")
+
 
 const authentication = require("./middleware/authentication")
 
 app.use(express.json())
 
-app.use("/staff",patientRouter)// change this url
+app.use("/staff",authentication,patientRouter)// change this url
 app.use("/admin",adminRouter)
 app.use("/hospital",hospitalRouter)
-app.use("/auth",authentication, authRouter)
+app.use("/auth", authRouter)
+app.use("/serviceRouter",authentication,serviceRouter)
 
 const port = 5500
 

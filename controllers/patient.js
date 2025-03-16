@@ -74,7 +74,7 @@ const registerPatient = async (req, res) => {
     }
 
     console.log("New services added:", newServices);
-    return res.status(201).json({ newServices });
+    return res.status(201).json({ firstName, lastName, phoneNumber, email, newServices });    
 
   } catch (error) {
     console.error(`Error updating patient: ${error.message}`);
