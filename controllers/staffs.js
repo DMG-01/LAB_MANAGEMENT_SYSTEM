@@ -1,5 +1,6 @@
 const statusCodes = require("http-status-codes")
 const service = require("../models/service")
+const patient = require("../models/patient")
 
 const modifyAserviceProperties = async (req,res)=> {
 
@@ -48,6 +49,27 @@ const removeServiceProperties = async (req,res)=> {
     }catch(error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error})
     }
+}
+
+const uploadAPatientResult = async(req,res)=> {
+
+    const _patient = await patient.findOne({_id:req.params.id})
+    
+    if(!_patient) {
+        return res.status(statusCodes.NOT_FOUND).json({msg:`patient with _id ${req.params.id} not found`})
+    }
+
+
+    try {
+
+    }catch(error) {
+        return res.stat
+    }
+}
+
+
+const modifyPatientResult = async(req,res)=> {
+
 }
 
 module.exports =  {modifyAserviceProperties,removeServiceProperties}

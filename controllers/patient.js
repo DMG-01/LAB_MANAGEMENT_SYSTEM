@@ -45,7 +45,11 @@ const registerPatient = async (req, res) => {
   }
 
   try {
-    let patientDetails = await patient.findOne({ phoneNumber }).populate("service.serviceId");
+    let patientDetails = await patient.findOne({
+      firstName,
+      lastName,
+      phoneNumber
+    }).populate("service.serviceId");
 
     let newServices = [];
 
@@ -140,7 +144,7 @@ const getTotalAmount = async (req, res) => {
 const getOnePatient = async (req, res) => {
   try {
     const _patient = await patient
-      .find({ _id: req.params.id })
+      .findOne({ _id: req.params.id })
       .populate("service.serviceId");
     if (!_patient) {
       return res
