@@ -10,3 +10,7 @@ sending patient result to them softcopy
 page not found router
 when a new staff is added send their login to their phone number
 limit some features depending on their levels
+
+
+send result to their phone number or email 
+send new month, new year and happy birthday messages

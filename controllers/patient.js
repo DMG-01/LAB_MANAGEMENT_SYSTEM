@@ -1,9 +1,10 @@
 const patient = require("../models/patient");
 const hospitalDiscount = require("../models/hospitalDiscount");
 const statusCodes = require("http-status-codes");
+const register = require("../models/register");
 
 const registerPatient = async (req, res) => {
-  const { firstName, lastName, phoneNumber, email, service } = req.body;
+  const { firstName, lastName, phoneNumber, email, service, _methodOfPayment } = req.body;
 
   let totalAmount = 0;
 
@@ -18,9 +19,8 @@ const registerPatient = async (req, res) => {
 
   // Handle referral logic
   const referredFrom = service[0]?.referredFrom || "private";
-
-  if (referredFrom !== "private") {
-    try {
+  try {
+    if (referredFrom !== "private") {
       let referral = await hospitalDiscount.findOne({ Name: referredFrom });
 
       if (!referral) {
@@ -37,25 +37,21 @@ const registerPatient = async (req, res) => {
         await referral.save();
         console.log(`Updated referral: ${referredFrom}`);
       }
-    } catch (error) {
-      console.error(`Referral handling failed: ${error.message}`);
+    } else {
+      console.log("Referred from private");
     }
-  } else {
-    console.log("Referred from private");
-  }
 
-  try {
+    // Patient lookup and service handling
     let patientDetails = await patient.findOne({
       firstName,
       lastName,
-      phoneNumber
+      phoneNumber,
     }).populate("service.serviceId");
 
     let newServices = [];
 
     if (!patientDetails) {
-      // Create new patient
-      const newPatient = await patient.create({
+      patientDetails = await patient.create({
         firstName,
         lastName,
         phoneNumber,
@@ -70,18 +66,42 @@ const registerPatient = async (req, res) => {
       service.forEach((s) => {
         if (s.serviceId && s.amountPaid && !existingServiceIds.includes(s.serviceId.toString())) {
           patientDetails.service.push(s);
-          newServices.push(s); // Capture new services only
+          newServices.push(s);
         }
       });
-
       await patientDetails.save();
     }
 
     console.log("New services added:", newServices);
-    return res.status(201).json({ firstName, lastName, phoneNumber, email, newServices });    
 
+    // Auto-increment lab number
+    let regNumber = await register.countDocuments() + 1;
+    console.log(`Number of registered patients: ${regNumber}`);
+
+    // Create new registration entry
+    const serviceIds = service.map(s => s.serviceId);
+
+    await register.create({
+      labNumber: regNumber++,
+      patientId: patientDetails._id,
+      Service: serviceIds,
+      amountPaid: totalAmount,
+      methodOfPayment: _methodOfPayment
+    });
+    
+
+    return res.status(201).json({
+      msg: "Patient registered successfully",
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      newServices,
+      labNumber: regNumber,
+    });
   } catch (error) {
-    console.error(`Error updating patient: ${error.message}`);
+    console.error(`Error registering patient: ${error.message}`);
+    return res.status(500).json({ msg: `Error registering patient: ${error.message}` });
   }
 };
 
