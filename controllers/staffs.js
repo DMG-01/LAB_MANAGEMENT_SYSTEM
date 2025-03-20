@@ -108,72 +108,17 @@ const uploadAPatientResult = async (req, res) => {
   
       // Find the patient's registration and populate serviceId in Service array
       const patientInRegister = await register
-        .findOne({ _id: req.params.id })
-        .populate("Service.serviceId");
-        return res.status(statusCodes.OK).json({patientInRegister})
-/*
- 
-       // console.log("Patient found in register", patientInRegister);
-        //console.log(patientInRegister._id)
-        console.log(`patient services : ${patientInRegister.Service[0]}`)
-        patientInRegister.Service.forEach((service, index) => {
-            console.log(`Service ${index + 1} ID: ${service.serviceId}`);
-          });
-          
-          
-  
-      if (!patientInRegister) {
-        console.log("No patient found in register");
-        return res
-          .status(statusCodes.NOT_FOUND)
-          .json({ msg: `No patient with register id ${req.params.id} found` });
-      }
-  
-      //console.log("Patient found in register", patientInRegister);
-  
-      // Find the specific service entry associated with this patient
-      const serviceEntry = patientInRegister.Service.find(
-        {serviceId: req.params.serviceId}
-      );
-      console.log("Service entry found", serviceEntry);
-  
-      if (!serviceEntry) {
-        console.error(`Service with ID ${req.params.serviceId} not found for this patient.`);
-        return res
-          .status(statusCodes.BAD_REQUEST)
-          .json({ msg: `Service not linked to this patient.` });
-      }
-  
-      console.log(`Service found: ${serviceEntry.serviceId._id}`);
-  
-      // Ensure result length matches the service's properties length
-      if (result.length !== serviceEntry.serviceId.properties.length) {
-        console.log("Invalid result upload");
-        return res
-          .status(statusCodes.BAD_REQUEST)
-          .json({ msg: `The result data doesn't match the service structure.` });
-      }
-  
-      console.log("Result matches service properties");
-  
-      // Update the correct service's values array
-      const updatedRegister = await register.findOneAndUpdate(
-        {
-          _id: req.params.id,
-          "Service.serviceId": req.params.serviceId,
-        },
-        {
-          $push: { "Service.$.values": { $each: result } },
-        },
-        { new: true }
-      ).populate("Service.serviceId");
-  
-      console.log("Updated register successfully", updatedRegister);
-  
-      return res
-        .status(statusCodes.OK)
-        .json({ msg: "Updated successfully", updatedRegister });
-        */
+        .findOneAndUpdate({ _id: req.params.id,
+            "service.serviceId" : req.params.serviceId
+         },{
+            $push : {
+                "service.$.values" : result
+            }
+        })
+        .populate("service.serviceId");
+       
+
+      return(res.status(statusCodes.OK).json({msg : patientInRegister}))
     } catch (error) {
       console.error(`Failed to upload result: ${error.message}`);
       return res
