@@ -78,13 +78,17 @@ const registerPatient = async (req, res) => {
     let regNumber = await register.countDocuments() + 1;
     console.log(`Number of registered patients: ${regNumber}`);
 
-    // Create new registration entry
-    const serviceIds = service.map(s => s.serviceId);
+    const serviceForRegister = service.map((s)=> ({
+      serviceId :s.serviceId,
+      values:[]
+    }))
+     console.log(serviceForRegister)
+ 
 
     await register.create({
       labNumber: regNumber++,
       patientId: patientDetails._id,
-      Service: serviceIds,
+      service: serviceForRegister,
       amountPaid: totalAmount,
       methodOfPayment: _methodOfPayment
     });

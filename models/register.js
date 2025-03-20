@@ -9,12 +9,18 @@ const registerSchema = mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:"patient"
     },
-    Service: [{
-        type:mongoose.Types.ObjectId,
-        required:[true,"service is required"],
-        ref:"service",
-        default:[]
-    }],
+    service: [
+        {
+            serviceId: { 
+                type: mongoose.Types.ObjectId,
+                 ref: "service" 
+                },
+          values: 
+          { type: [String],
+             default: [] 
+            }, 
+        },
+      ],
     amountPaid: {
         type:Number,
         required:[true,"amount paid is required"]
