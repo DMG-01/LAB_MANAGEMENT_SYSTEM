@@ -46,7 +46,7 @@
                 type: String,
                 default: "private" // "private" is the default value
             }
-        }]
+        }],   
     }, { timestamps: true });
 
     

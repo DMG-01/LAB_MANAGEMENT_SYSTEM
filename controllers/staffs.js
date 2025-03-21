@@ -50,57 +50,7 @@ const removeServiceProperties = async (req,res)=> {
     }catch(error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error})
     }
-}/*
-const uploadAPatientResult = async (req, res) => {
-    const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-        return res.status(statusCodes.BAD_REQUEST).json({ msg: "Please provide startDate and endDate" });
-    }
-
-    
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        return res.status(statusCodes.BAD_REQUEST).json({ msg: "Invalid date format. Use YYYY-MM-DD" });
-    }
-
-    try {
-        
-        const _patient = await patient.findOne(
-            { _id: req.params.id },
-            {
-                service: {
-                    $filter: {
-                        input: "$service",
-                        as: "service",
-                        cond: {
-                            $and: [
-                                { $gte: ["$$service.serviceTime", start] },
-                                { $lte: ["$$service.serviceTime", end] }
-                            ]
-                        }
-                    }
-                }
-            }
-        ).populate("service.serviceId");
-
-        if (!_patient) {
-            const __patientDetails = await  patient.findOne({_id:req.params.id})
-            return res.status(statusCodes.NOT_FOUND).json({ msg: `No patient with id ${req.params.id} has a servcie at that time patient : ${__patientDetails}` });
-       
-     } 
-    
-        return res.status(statusCodes.OK).json({ _patient });
-        
-    } catch (error) {
-        console.error("Error fetching patient services:", error);
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "Failed to fetch patient results" });
-    }
-};
-*/
+}
 
 const uploadAPatientResult = async (req, res) => {
     try {
@@ -117,8 +67,17 @@ const uploadAPatientResult = async (req, res) => {
         })
         .populate("service.serviceId");
        
+        if (!patientInRegister) {
+            return res.status(statusCodes.NOT_FOUND).json({msg:`no patient with id ${req.params.id} found`})
+        }
 
-      return(res.status(statusCodes.OK).json({msg : patientInRegister}))
+        console.log(`patient result has been uploaded successfully ${patientInRegister} adding result to patient history database`)
+
+        
+
+            
+
+     
     } catch (error) {
       console.error(`Failed to upload result: ${error.message}`);
       return res
