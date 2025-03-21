@@ -111,7 +111,7 @@ const uploadAPatientResult = async (req, res) => {
         .findOneAndUpdate({ _id: req.params.id,
             "service.serviceId" : req.params.serviceId
          },{
-            $push : {
+            $set : {
                 "service.$.values" : result
             }
         })
