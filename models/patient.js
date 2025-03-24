@@ -24,29 +24,12 @@
         age : {
             type:Number
         },
-        service: [{
-            serviceId: {
-                type: mongoose.Types.ObjectId,
-                ref: "service",
-                required: true
-            },
-            serviceTime: {
-                type: Date,
-                default: Date.now
-            },
-            amountPaid: {
-                type: Number,
-                required: true
-            },
-            methodOfPayment: {
-                type: String,
-                required: true
-            },
-            referredFrom: {
-                type: String,
-                default: "private" // "private" is the default value
+        labNumber : [
+            {
+                type:mongoose.Types.ObjectId,
+                ref:"register"
             }
-        }],   
+        ]  
     }, { timestamps: true });
 
     

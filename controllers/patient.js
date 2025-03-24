@@ -3,10 +3,57 @@ const hospitalDiscount = require("../models/hospitalDiscount");
 const statusCodes = require("http-status-codes");
 const register = require("../models/register");
 
+// add to the register
+// validates the amount -- might change this since the amount would be whole
+// handle referral logic 
+// patient look up and creating a new patient or adding to their list of service
+
 const registerPatient = async (req, res) => {
   const { firstName, lastName, phoneNumber, email, service, _methodOfPayment } = req.body;
 
-  let totalAmount = 0;
+
+  try {
+  console.log(`adding patient to the database`)
+  let registerNumber = await register.countDocuments()
+  console.log(registerNumber)
+
+  let patientInRegister = await register.create({
+    labNumber:registerNumber++,
+    
+
+  })
+
+  }catch(error)
+ {
+  return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`error registering patient ${error}`})
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
   // Validate amountPaid for each service
   for (const s of service) {
@@ -107,6 +154,7 @@ const registerPatient = async (req, res) => {
     console.error(`Error registering patient: ${error.message}`);
     return res.status(500).json({ msg: `Error registering patient: ${error.message}` });
   }
+    */
 };
 
   
