@@ -9,7 +9,6 @@ const {modifyAserviceProperties,removeServiceProperties,uploadAPatientResult} = 
 
 patientRouter.route("/patientSignUp").post(registerPatient)
 patientRouter.route("/patient/:id").get(getOnePatient)
-patientRouter.route("/patients").get(getAllPatient)
 patientRouter.route("/totalAmount").get(getTotalAmount)
 
 serviceRouter.route("/modifyServiceProperty/:id").post(modifyAserviceProperties)
