@@ -22,7 +22,6 @@ const registerPatient = async (req, res) => {
     
 
   })
-
   }catch(error)
  {
   return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`error registering patient ${error}`})
