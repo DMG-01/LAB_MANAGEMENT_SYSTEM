@@ -129,8 +129,37 @@ const getTotalAmount = async (req, res) => {
 
 
 const getOnePatient = async (req, res) => { 
-  return 0
+  
+  try {
+   let searchQuery = []
+
+   if (req.body.firstName){
+    searchQuery.push({firstName:req.body.firstName})
+   }
+
+   if(req.body.lastName) {
+    searchQuery.push({lastName:req.body.lastName})
+   }
+
+   if(req.body.phoneNumber) {
+    searchQuery.push({phoneNumber:req.body.phoneNumber})
+   }
+
+   if(req.body.email) {
+    searchQuery.push({email:req.body.email})
+   }
+
+   let patientDetails = await patient.find({
+    $or: searchQuery.length ? searchQuery : [{}]
+   })
+
+   return(res.status(statusCodes.OK)).json({msg:`Patient found`, patientDetails})
+  }catch(error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
+  }
 }
+
+
 
 const getAllPatient = async (req, res) => {
   try {
