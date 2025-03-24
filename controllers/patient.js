@@ -9,92 +9,65 @@ const register = require("../models/register");
 // patient look up and creating a new patient or adding to their list of service
 
 const registerPatient = async (req, res) => {
-  const { firstName, lastName, phoneNumber, email, service, _methodOfPayment } = req.body;
-
+  const {
+    firstName,
+    lastName,
+    phoneNumber,
+    email,
+    service,
+    _methodOfPayment,
+    amountPaid,
+    referredFrom,
+  } = req.body;
 
   try {
-  console.log(`adding patient to the database`)
-  let registerNumber = await register.countDocuments()
-  console.log(registerNumber)
+    console.log(`Adding patient to the database`);
 
-  let patientInRegister = await register.create({
-    labNumber:registerNumber++,
-    
+    let registerNumber = await register.countDocuments();
+    console.log(registerNumber);
 
-  })
-  }catch(error)
- {
-  return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`error registering patient ${error}`})
- }
+    let patientInRegister = await register.create({
+      labNumber: ++registerNumber,
+      FirstName: firstName,
+      LastName: lastName,
+      phoneNumber: phoneNumber,
+      email: email,
+      service: service,
+      amountPaid: amountPaid,
+      methodOfPayment: _methodOfPayment,
+    });
 
+    console.log(`Patient added to the register`);
+    console.log(`Handling referral`);
 
+    if (referredFrom) {
+      const referral = await hospitalDiscount.findOne({ _id: referredFrom });
+      const updatedAmount = (referral?.totalAmount || 0) + amountPaid;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-  // Validate amountPaid for each service
-  for (const s of service) {
-    const parsedAmountPaid = Number(s.amountPaid);
-    if (isNaN(parsedAmountPaid)) {
-      return res.status(400).json({ msg: "Invalid amountPaid, must be a valid number in each service" });
-    }
-    totalAmount += parsedAmountPaid;
-  }
-
-  // Handle referral logic
-  const referredFrom = service[0]?.referredFrom || "private";
-  try {
-    if (referredFrom !== "private") {
-      let referral = await hospitalDiscount.findOne({ Name: referredFrom });
-
-      if (!referral) {
-        referral = new hospitalDiscount({
-          Name: referredFrom,
-          totalAmount,
-          totalDiscount: Number((10 / 100) * totalAmount),
-        });
-        await referral.save();
-        console.log(`New referral created: ${referredFrom}`);
-      } else {
-        referral.totalAmount += totalAmount;
-        referral.totalDiscount += Number((10 / 100) * totalAmount);
-        await referral.save();
-        console.log(`Updated referral: ${referredFrom}`);
-      }
+      await hospitalDiscount.findOneAndUpdate(
+        { _id: referredFrom },
+        {
+          totalAmount: updatedAmount,
+          totalDiscount: Number((10 / 100) * updatedAmount),
+        }
+      );
     } else {
-      console.log("Referred from private");
+      console.log(`Referred from private`);
     }
 
-    // Patient lookup and service handling
-    let patientDetails = await patient.findOne({
-      firstName,
-      lastName,
-      phoneNumber,
-    }).populate("service.serviceId");
+    console.log(`Referral handled`);
+    console.log(`Patient lookup and service handling`);
 
-    let newServices = [];
+    let patientDetails = await patient.findOneAndUpdate(
+      {
+        firstName,
+        lastName,
+        phoneNumber,
+      },
+      {
+        $push: { labNumbers: registerNumber },
+      }
+    );
 
     if (!patientDetails) {
       patientDetails = await patient.create({
@@ -104,129 +77,60 @@ const registerPatient = async (req, res) => {
         email,
         service,
       });
-      newServices = service;
-    } else {
-      // Track and add only new services
-      const existingServiceIds = patientDetails.service.map((s) => s.serviceId.toString());
-
-      service.forEach((s) => {
-        if (s.serviceId && s.amountPaid && !existingServiceIds.includes(s.serviceId.toString())) {
-          patientDetails.service.push(s);
-          newServices.push(s);
-        }
-      });
-      await patientDetails.save();
+      console.log(`New patient created`);
     }
 
-    console.log("New services added:", newServices);
-
-    // Auto-increment lab number
-    let regNumber = await register.countDocuments() + 1;
-    console.log(`Number of registered patients: ${regNumber}`);
-
-    const serviceForRegister = service.map((s)=> ({
-      serviceId :s.serviceId,
-      values:[]
-    }))
-     console.log(serviceForRegister)
- 
-
-    await register.create({
-      labNumber: regNumber++,
-      patientId: patientDetails._id,
-      service: serviceForRegister,
-      amountPaid: totalAmount,
-      methodOfPayment: _methodOfPayment
-    });
-    
-
-    return res.status(201).json({
-      msg: "Patient registered successfully",
-      firstName,
-      lastName,
-      phoneNumber,
-      email,
-      newServices,
-      labNumber: regNumber,
-    });
+    return res
+      .status(statusCodes.OK)
+      .json({ msg: `Patient registered successfully`, patientDetails, patientInRegister });
   } catch (error) {
-    console.error(`Error registering patient: ${error.message}`);
-    return res.status(500).json({ msg: `Error registering patient: ${error.message}` });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: `Error registering patient: ${error.message}` });
   }
-    */
 };
 
-  
-  
 
 const getTotalAmount = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
-    // Check if dates are provided
+    
     if (!startDate || !endDate) {
       return res
         .status(400)
         .json({ msg: "Please provide both startDate and endDate" });
     }
 
-    // Convert startDate and endDate to valid Date objects
+    
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Ensure valid date conversion
+    
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return res.status(400).json({ msg: "Invalid date format" });
     }
 
-    // Fetch all patients with services in the time range and populated serviceId
-    const patients = await patient
-      .find({
-        "service.serviceTime": { $gte: start, $lte: end },
-      })
-      .populate("service.serviceId");
+   let patientInRegister = await register.find({
+    Time: {$gte:start, $lte:end}
+   })
 
-    // Initialize totalAmount to sum the prices
-    let totalAmount = 0;
+   let totalAmount = 0
 
-    // Sum up the amountPaid for services within the specified date range
-    patients.forEach((p) => {
-      if (Array.isArray(p.service)) {
-        p.service.forEach((s) => {
-          if (
-            s.serviceTime >= start &&
-            s.serviceTime <= end &&
-            s.serviceId &&
-            typeof s.amountPaid === "number"
-          ) {
-            totalAmount += s.amountPaid;
-          }
-        });
-      }
-    });
+   patientInRegister.forEach((patient)=> {
+    totalAmount += patient.amountPaid
+   })
 
-    // Send the response with the total amount
-    res.status(200).json({ totalAmount });
-  } catch (error) {
-    return res.status(500).json({ msg: error.message });
-  }
-};
-
-const getOnePatient = async (req, res) => {
-  try {
-    const _patient = await patient
-      .findOne({ _id: req.params.id })
-      .populate("service.serviceId");
-    if (!_patient) {
-      return res
-        .status(statusCodes.NOT_FOUND)
-        .json({ msg: `no patient with id ${req.params.id} found` });
-    }
-    return res.status(statusCodes.OK).json({ _patient });
+   return res.status(200).json({msg:`Total amount paid between ${start} and ${end} is ${totalAmount}`, patients:patientInRegister})
   } catch (error) {
     return res.status(statusCodes.INTERNAL_SERVER_ERROR);
   }
 };
+
+
+const getOnePatient = async (req, res) => { 
+  return 0
+}
 
 const getAllPatient = async (req, res) => {
   try {

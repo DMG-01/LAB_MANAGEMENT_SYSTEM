@@ -10,6 +10,10 @@ const registerSchema = mongoose.Schema({
         type:String,
         required:[true,"firstName is required"]
     },
+    LastName : {
+        type:String,
+        required:[true,"lastName is required"]
+    },
     phoneNumber: {
         type:Number,
         required:[true,"phoneNumber is required"]
@@ -41,6 +45,14 @@ const registerSchema = mongoose.Schema({
     methodOfPayment: {
         type:String,
         required:[true,"method of payment is required"]
+    },
+    referral : {
+        type:mongoose.Types.ObjectId,
+        ref:'HospitalDiscount'
+    }, 
+    Time : {
+        type:Date,
+        default:Date.now
     }
 })
 
