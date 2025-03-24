@@ -6,9 +6,16 @@ const registerSchema = mongoose.Schema({
         type:Number,
         required:[true,"lab number is required"]
     },
-    patientId: {
-        type:mongoose.Types.ObjectId,
-        ref:"patient"
+    FirstName: {
+        type:String,
+        required:[true,"firstName is required"]
+    },
+    phoneNumber: {
+        type:Number,
+        required:[true,"phoneNumber is required"]
+    },
+    email : {
+        type:String
     },
     service: [
         {
