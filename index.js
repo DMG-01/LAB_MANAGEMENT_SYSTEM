@@ -2,6 +2,7 @@ const express = require("express")
 const app = express()
 const connectDb = require("./db/connect")
 require("dotenv").config()
+const cors = require("cors")
 
 const {patientRouter, serviceRouter} = require("./Routes/staffRoute")
 const adminRouter = require("./Routes/adminRoute")
@@ -10,7 +11,7 @@ const authRouter = require("./Routes/auth")
 
 
 const authentication = require("./middleware/authentication")
-
+app.use(cors())
 app.use(express.json())
 
 app.use("/staff",authentication,patientRouter)// change this url

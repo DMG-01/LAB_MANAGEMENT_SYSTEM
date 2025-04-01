@@ -86,7 +86,7 @@ const staffLogin = async (req,res)=> {
 
        const jwtToken = _staff.createJWT()
        console.log(jwtToken)
-       return res.status(statusCodes.OK).json({_staff})
+       return res.status(statusCodes.OK).json({_staff, JWT : jwtToken})
 
     }catch(error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:error})
