@@ -89,9 +89,3 @@ const uploadAPatientResult = async (req, res) => {
   
   module.exports = { modifyAserviceProperties, removeServiceProperties, uploadAPatientResult };
   
-  
-  module.exports = { modifyAserviceProperties, removeServiceProperties, uploadAPatientResult };
-  
-  
-  
-module.exports =  {modifyAserviceProperties,removeServiceProperties, uploadAPatientResult}

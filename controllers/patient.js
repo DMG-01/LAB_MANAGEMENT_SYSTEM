@@ -163,6 +163,7 @@ const getOnePatient = async (req, res) => {
 
 
 
+
 module.exports = {
   registerPatient,
   getOnePatient,
